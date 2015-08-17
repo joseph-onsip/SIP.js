@@ -124,13 +124,7 @@ module.exports = function(grunt) {
 
 
   // Load Grunt plugins.
-  grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
-  grunt.loadNpmTasks('grunt-peg');
-  grunt.loadNpmTasks('grunt-trimtrailingspaces');
+  require('load-grunt-tasks')(grunt);
 
   grunt.registerTask('grammar', ['peg']);
 
