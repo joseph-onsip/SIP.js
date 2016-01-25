@@ -204,6 +204,7 @@ Utils= {
     var exceptions = {
       'Call-Id': 'Call-ID',
       'Cseq': 'CSeq',
+      'Min-Se': 'Min-SE',
       'Rack': 'RAck',
       'Rseq': 'RSeq',
       'Www-Authenticate': 'WWW-Authenticate'
@@ -278,19 +279,6 @@ Utils= {
       return Math.floor(Math.random()*(to-from+1)+from);
     }
     return '192.0.2.' + getOctet(1, 254);
-  },
-
-  getAllowedMethods: function(ua) {
-    var event,
-      allowed = SIP.UA.C.ALLOWED_METHODS.toString();
-
-    for (event in SIP.UA.C.EVENT_METHODS) {
-      if (ua.listeners(event).length) {
-        allowed += ','+ SIP.UA.C.EVENT_METHODS[event];
-      }
-    }
-
-    return allowed;
   },
 
   // MD5 (Message-Digest Algorithm) http://www.webtoolkit.info
