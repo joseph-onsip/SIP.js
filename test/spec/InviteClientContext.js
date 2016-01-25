@@ -40,7 +40,7 @@ describe('An INVITE sent from a UAC', function () {
    *
    */
   it('inits instance attributes', function () {
-    expect(this.session.ua).toBe(this.ua);
+    expect(this.session.ua).not.toBe(this.ua);
     expect(this.session.method).toBe(SIP.C.INVITE);
 
     expect(this.session.request).toBeDefined();
