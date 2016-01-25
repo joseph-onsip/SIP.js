@@ -109,6 +109,32 @@ describe('MediaStreamManager', function () {
         done();
       });
     });
+
+    it('does not require local streams', function(done) {
+      var success, failure, onUM, onUMF;
+
+      success = jasmine.createSpy('success');
+      failure = jasmine.createSpy('failure');
+      onUM = jasmine.createSpy('userMediaFailed');
+      onUMF = jasmine.createSpy('userMediaFailed');
+
+      mediaStreamManager.on('userMedia', onUM);
+      mediaStreamManager.on('userMediaFailed', onUMF);
+
+      mediaStreamManager.acquire({
+        constraints: {
+          audio: false,
+          video: false
+        }
+      }).then(success, failure)
+      .then(function () {
+        expect(onUM).not.toHaveBeenCalled();
+        expect(onUMF).not.toHaveBeenCalled();
+        expect(success).toHaveBeenCalledWith([]);
+        expect(failure).not.toHaveBeenCalled();
+        done();
+      });
+    });
   });
 
   describe('.release', function () {
@@ -129,9 +155,11 @@ describe('MediaStreamManager', function () {
       );
     });
 
-    it('calls stop() on the MediaStream it was passed', function () {
+    it('calls stop() on the tracks of the MediaStream it was passed', function () {
         expect(acquiredStream).not.toBeNull();
-        expect(acquiredStream.stop).toHaveBeenCalled();
+        acquiredStream.getTracks().forEach(function (track) {
+          expect(track.stop).toHaveBeenCalled();
+        });
     });
   });
 
@@ -169,11 +197,13 @@ describe('MediaStreamManager', function () {
         });
     });
 
-    it('.release does not stop the stream', function (done) {
+    it('.release does not stop the stream\'s tracks', function (done) {
       mediaStreamManager.acquire(mediaHint).then(onSuccess, onFailure)
       .then(function () {
         mediaStreamManager.release(stream);
-        expect(stream.stop).not.toHaveBeenCalled();
+        stream.getTracks().forEach(function (track) {
+          expect(track.stop).not.toHaveBeenCalled();
+        });
         done();
       });
     });

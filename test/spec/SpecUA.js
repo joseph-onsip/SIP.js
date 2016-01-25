@@ -302,6 +302,8 @@ describe('UA', function() {
 
     beforeEach(function() {
       options = 'options';
+      UA.transport = {};
+      UA.transport.connected = true;
     });
 
     it('does not require any arguments', function () {
@@ -705,38 +707,17 @@ describe('UA', function() {
       expect(replySpy).toHaveBeenCalledWith(200,null,jasmine.any(Array))
     });
 
-    it('checks if there is a listener when the SIP method is message and rejects if no listener is found', function() {
-      var request = { method : SIP.C.MESSAGE ,
-                      ruri : { user : UA.configuration.uri.user } ,
-                      reply : replySpy };
-      UA.listeners = jasmine.createSpy('listeners').and.callFake(function() {
-        return [];
-      });
-      expect(UA.receiveRequest(request)).toBeUndefined();
-      expect(UA.listeners).toHaveBeenCalledWith(request.method.toLowerCase());
-      expect(SIP.Transactions.NonInviteServerTransaction).toHaveBeenCalledWith(request,UA);
-      expect(replySpy).toHaveBeenCalledWith(405, null, jasmine.any(Array));
-    });
-
-    it('checks if there is a listener when the SIP method is message and accepts if listener is found', function() {
-      var callback = jasmine.createSpy('callback').and.callFake(function() {
-        return true;
-      });
+    it('Accepts SIP MESSAGE requests', function() {
       var request = { method : SIP.C.MESSAGE ,
                       ruri : { user : UA.configuration.uri.user } ,
                       reply : replySpy,
                       getHeader: jasmine.createSpy('getHeader')};
-      UA.listeners = jasmine.createSpy('listeners').and.callFake(function() {
-        return [1];
-      });
-      UA.on('message',callback);
 
       UA.receiveRequest(request);
 
       expect(SIP.ServerContext).toHaveBeenCalledWith(UA, request);
       expect(replySpy).toHaveBeenCalledWith(200,null);
       expect(request.getHeader).toHaveBeenCalled();
-      expect(callback).toHaveBeenCalled();
     });
 
     xit('creates a ServerContext if the SIP method is anything besides options, message, invite, and ack', function() {
@@ -1202,6 +1183,12 @@ describe('UA', function() {
       UA.loadConfig({uri: 'james@onsnip.onsip.com'});
 
       expect(UA.configuration.authorizationUser).toBe(UA.configuration.uri.user);
+    });
+
+    it('sets iceCheckingTimeout as low as 0.5 seconds', function() {
+      UA.loadConfig({iceCheckingTimeout: 0});
+
+      expect(UA.configuration.iceCheckingTimeout).toBe(500);
     });
 
     it('sets the registrarServer to the uri (without user) if it is not passed in', function() {
