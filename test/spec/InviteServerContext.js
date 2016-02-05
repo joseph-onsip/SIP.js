@@ -36,7 +36,7 @@ describe('A UAS receiving an INVITE', function () {
 
       jasmine.clock().tick(100);
 
-      expect(SIP.InviteServerContext).toHaveBeenCalled();
+      expect(SIP.InviteServerContext).not.toHaveBeenCalled();
       expect(ua_config.mediaHandlerFactory).toHaveBeenCalled();
       expect(callback).toHaveBeenCalled();
 
